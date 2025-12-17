@@ -172,7 +172,7 @@ export default function CardapioDigital() {
       const itemIndex = prevCarrinho.findIndex(item => item.id === produto.id);
       if (itemIndex !== -1) {
         return prevCarrinho.map(item =>
-          item.id === produto.id ? { ...item, quantidade: item.quantidade + 1 } : item
+          item.id === produto.id ? { ...item, quantidade: Number(item.quantidade) + 1 } : item
         );
       }
       // garantir que não venham propriedades "quantidade" do produto original
@@ -184,7 +184,7 @@ export default function CardapioDigital() {
   const aumentarQuantidade = (id) => {
     setCarrinho(prevCarrinho =>
       prevCarrinho.map(item =>
-        item.id === id ? { ...item, quantidade: item.quantidade + 1 } : item
+        item.id === id ? { ...item, quantidade: Number(item.quantidade) + 1 } : item
       )
     );
   };
@@ -193,11 +193,12 @@ export default function CardapioDigital() {
     setCarrinho(prevCarrinho => {
       const item = prevCarrinho.find(i => i.id === id);
       if (!item) return prevCarrinho;
-      if (item.quantidade === 1) {
+      const qty = Number(item.quantidade);
+      if (qty === 1) {
         return prevCarrinho.filter(i => i.id !== id);
       }
       return prevCarrinho.map(i =>
-        i.id === id ? { ...i, quantidade: i.quantidade - 1 } : i
+        i.id === id ? { ...i, quantidade: qty - 1 } : i
       );
     });
   };
@@ -207,7 +208,7 @@ export default function CardapioDigital() {
   };
 
   const calcularTotal = () => {
-    return carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+    return carrinho.reduce((total, item) => total + (item.preco * Number(item.quantidade)), 0);
   };
 
   const obterQuantidadeNoCarrinho = (produtoId) => {
@@ -221,10 +222,10 @@ export default function CardapioDigital() {
       return;
     }
 
-    let mensagem = '*🍔 NOVO PEDIDO*\n';
+    let mensagem = '* NOVO PEDIDO*\n';
     
     if (mesaAtual) {
-      mensagem += `*📍 MESA ${mesaAtual}*\n`;
+      mensagem += `* MESA ${mesaAtual}*\n`;
     }
     
     mensagem += '\n';
@@ -333,7 +334,7 @@ export default function CardapioDigital() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-4xl font-bold drop-shadow-lg text-gray-900">🍔 Burger House</h1>
-              <p className="text-orange-600 text-sm mt-1">Os melhores hambúrgueres da cidade</p>
+              <p className="text-green text-sm mt-1">Os melhores hambúrgueres da cidade</p>
             </div>
           
             <div className="flex items-center gap-3">
@@ -372,7 +373,7 @@ export default function CardapioDigital() {
                 <ShoppingCart size={24} />
                 {carrinho.length > 0 && (
                   <span className="absolute -top-2 -right-2 bg-green-500 text-white text-sm w-7 h-7 rounded-full flex items-center justify-center font-bold shadow-lg animate-bounce">
-                    {carrinho.reduce((total, item) => total + item.quantidade, 0)}
+                    {carrinho.reduce((total, item) => total + Number(item.quantidade), 0)}
                   </span>
                 )}
               </button>
@@ -438,7 +439,7 @@ export default function CardapioDigital() {
             <ShoppingCart size={28} />
             Finalizar Pedido
             <span className="bg-white text-green-600 px-3 py-1 rounded-full text-sm">
-              {carrinho.reduce((total, item) => total + item.quantidade, 0)} itens
+              {carrinho.reduce((total, item) => total + Number(item.quantidade), 0)} itens
             </span>
           </button>
         </div>
