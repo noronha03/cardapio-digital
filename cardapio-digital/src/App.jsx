@@ -168,43 +168,42 @@ export default function CardapioDigital() {
   };
 
   const adicionarAoCarrinho = (produto) => {
-    const itemExiste = carrinho.find(item => item.id === produto.id);
-    
-    if (itemExiste) {
-      setCarrinho(carrinho.map(item =>
-        item.id === produto.id
-          ? { ...item, quantidade: item.quantidade + 1 }
-          : item
-      ));
-    } else {
-      setCarrinho([...carrinho, { ...produto, quantidade: 1 }]);
-    }
+    setCarrinho(prevCarrinho => {
+      const itemIndex = prevCarrinho.findIndex(item => item.id === produto.id);
+      if (itemIndex !== -1) {
+        return prevCarrinho.map(item =>
+          item.id === produto.id ? { ...item, quantidade: item.quantidade + 1 } : item
+        );
+      }
+      // garantir que não venham propriedades "quantidade" do produto original
+      const { quantidade, ...produtoSemQuantidade } = produto;
+      return [...prevCarrinho, { ...produtoSemQuantidade, quantidade: 1 }];
+    });
   };
 
   const aumentarQuantidade = (id) => {
-    setCarrinho(carrinho.map(item =>
-      item.id === id
-        ? { ...item, quantidade: item.quantidade + 1 }
-        : item
-    ));
+    setCarrinho(prevCarrinho =>
+      prevCarrinho.map(item =>
+        item.id === id ? { ...item, quantidade: item.quantidade + 1 } : item
+      )
+    );
   };
 
   const diminuirQuantidade = (id) => {
-    const item = carrinho.find(item => item.id === id);
-    
-    if (item.quantidade === 1) {
-      removerDoCarrinho(id);
-    } else {
-      setCarrinho(carrinho.map(item =>
-        item.id === id
-          ? { ...item, quantidade: item.quantidade - 1 }
-          : item
-      ));
-    }
+    setCarrinho(prevCarrinho => {
+      const item = prevCarrinho.find(i => i.id === id);
+      if (!item) return prevCarrinho;
+      if (item.quantidade === 1) {
+        return prevCarrinho.filter(i => i.id !== id);
+      }
+      return prevCarrinho.map(i =>
+        i.id === id ? { ...i, quantidade: i.quantidade - 1 } : i
+      );
+    });
   };
 
   const removerDoCarrinho = (id) => {
-    setCarrinho(carrinho.filter(item => item.id !== id));
+    setCarrinho(prevCarrinho => prevCarrinho.filter(item => item.id !== id));
   };
 
   const calcularTotal = () => {
@@ -213,7 +212,7 @@ export default function CardapioDigital() {
 
   const obterQuantidadeNoCarrinho = (produtoId) => {
     const item = carrinho.find(item => item.id === produtoId);
-    return item ? item.quantidade : 0;
+    return item ? Number(item.quantidade) : 0;
   };
 
   const enviarParaWhatsApp = () => {
@@ -248,7 +247,7 @@ export default function CardapioDigital() {
     const quantidadeNoCarrinho = obterQuantidadeNoCarrinho(produto.id);
 
     return (
-      <div className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-2 relative border border-gray-700">
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-2 relative border border-gray-200">
         {isAdmin && (
           <div className="absolute top-3 right-3 z-10 flex gap-2">
             <button
@@ -270,15 +269,15 @@ export default function CardapioDigital() {
         
         <div className="relative">
           <img src={produto.imagem} alt={produto.nome} className="w-full h-52 object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-40"></div>
         </div>
         
         <div className="p-5">
-          <h3 className="font-bold text-xl text-white mb-2">{produto.nome}</h3>
-          <p className="text-gray-400 text-sm mb-4 line-clamp-2">{produto.descricao}</p>
+          <h3 className="font-bold text-xl text-gray-800 mb-2">{produto.nome}</h3>
+          <p className="text-gray-600 text-sm mb-4 line-clamp-2">{produto.descricao}</p>
           
           <div className="flex justify-between items-center mb-4">
-            <span className={`text-3xl font-bold ${categoria === 'hamburgueres' ? 'text-orange-400' : 'text-cyan-400'}`}>
+            <span className={`text-3xl font-bold ${categoria === 'hamburgueres' ? 'text-red-600' : 'text-blue-600'}`}>
               R$ {produto.preco.toFixed(2)}
             </span>
           </div>
@@ -287,15 +286,15 @@ export default function CardapioDigital() {
             <button
               onClick={() => adicionarAoCarrinho(produto)}
               className={`w-full ${categoria === 'hamburgueres' 
-                ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
-                : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
+                ? 'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700'
+                : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
               } text-white py-3 rounded-xl transition font-semibold flex items-center justify-center gap-2 shadow-lg`}
             >
               <Plus size={20} />
               Adicionar
             </button>
           ) : (
-            <div className="flex items-center justify-between bg-gray-700 rounded-xl p-2 shadow-inner">
+            <div className="flex items-center justify-between bg-gray-100 rounded-xl p-2 shadow-inner">
               <button
                 onClick={() => diminuirQuantidade(produto.id)}
                 className="bg-red-500 hover:bg-red-600 text-white w-10 h-10 rounded-lg flex items-center justify-center transition shadow-md"
@@ -304,13 +303,13 @@ export default function CardapioDigital() {
               </button>
               
               <div className="flex flex-col items-center">
-                <span className="text-xs text-gray-400 uppercase font-semibold">Quantidade</span>
-                <span className="text-2xl font-bold text-white">{quantidadeNoCarrinho}</span>
+                <span className="text-xs text-gray-500 uppercase font-semibold">Quantidade</span>
+                <span className="text-2xl font-bold text-gray-800">{quantidadeNoCarrinho}</span>
               </div>
               
               <button
                 onClick={() => aumentarQuantidade(produto.id)}
-                className="bg-green-500 hover:bg-green-600 text-white w-10 h-10 rounded-lg flex items-center justify-center transition shadow-md"
+                className="bg-green-600 hover:bg-green-700 text-white w-10 h-10 rounded-lg flex items-center justify-center transition shadow-md"
               >
                 <Plus size={20} />
               </button>
@@ -322,8 +321,8 @@ export default function CardapioDigital() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 text-white shadow-2xl sticky top-0 z-50 border-b-4 border-orange-400">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
+      <header className="bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-2xl sticky top-0 z-50 border-b-4 border-orange-400">
         <div className="container mx-auto px-4 py-6">
           {mesaAtual && (
             <div className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl mb-4 text-center font-bold text-lg shadow-xl animate-pulse">
@@ -333,8 +332,8 @@ export default function CardapioDigital() {
           
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold drop-shadow-lg">🍔 Burger House</h1>
-              <p className="text-orange-200 text-sm mt-1">Os melhores hambúrgueres da cidade</p>
+              <h1 className="text-4xl font-bold drop-shadow-lg text-gray-900">🍔 Burger House</h1>
+              <p className="text-orange-600 text-sm mt-1">Os melhores hambúrgueres da cidade</p>
             </div>
           
             <div className="flex items-center gap-3">
@@ -386,13 +385,13 @@ export default function CardapioDigital() {
         <section className="mb-16">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h2 className="text-4xl font-bold text-white mb-2">🍔 Hambúrgueres</h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-2">🍔 Hambúrgueres</h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-full"></div>
             </div>
             {isAdmin && (
               <button
                 onClick={() => abrirModalAdicionar('hamburgueres')}
-                className="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600 transition flex items-center gap-2 shadow-xl font-semibold"
+                className="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition flex items-center gap-2 shadow-xl font-semibold"
               >
                 <Plus size={22} />
                 Adicionar
@@ -409,13 +408,13 @@ export default function CardapioDigital() {
         <section>
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h2 className="text-4xl font-bold text-white mb-2">🥤 Bebidas</h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"></div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-2">🥤 Bebidas</h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full"></div>
             </div>
             {isAdmin && (
               <button
                 onClick={() => abrirModalAdicionar('bebidas')}
-                className="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600 transition flex items-center gap-2 shadow-xl font-semibold"
+                className="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition flex items-center gap-2 shadow-xl font-semibold"
               >
                 <Plus size={22} />
                 Adicionar
@@ -434,7 +433,7 @@ export default function CardapioDigital() {
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 animate-bounce">
           <button
             onClick={() => setMostrarCarrinho(true)}
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-3 font-bold text-lg transition-all"
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-3 font-bold text-lg transition-all"
           >
             <ShoppingCart size={28} />
             Finalizar Pedido
@@ -446,11 +445,11 @@ export default function CardapioDigital() {
       )}
 
       {mostrarLogin && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-700">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-200">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-white">🔐 Login Admin</h2>
-              <button onClick={() => setMostrarLogin(false)} className="text-gray-400 hover:text-white">
+              <h2 className="text-3xl font-bold text-gray-900">🔐 Login Admin</h2>
+              <button onClick={() => setMostrarLogin(false)} className="text-gray-500 hover:text-gray-900">
                 <X size={28} />
               </button>
             </div>
@@ -461,17 +460,17 @@ export default function CardapioDigital() {
               value={senhaDigitada}
               onChange={(e) => setSenhaDigitada(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && fazerLogin()}
-              className="w-full px-4 py-4 bg-gray-700 border-2 border-gray-600 text-white rounded-xl mb-4 focus:outline-none focus:border-orange-500 placeholder-gray-400"
+              className="w-full px-4 py-4 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl mb-4 focus:outline-none focus:border-red-500 placeholder-gray-400"
             />
             
             <button
               onClick={fazerLogin}
-              className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-4 rounded-xl hover:from-orange-600 hover:to-red-600 transition font-bold text-lg shadow-xl"
+              className="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white py-4 rounded-xl hover:from-red-700 hover:to-orange-700 transition font-bold text-lg shadow-xl"
             >
               Entrar
             </button>
             
-            <p className="text-sm text-gray-400 mt-4 text-center">
+            <p className="text-sm text-gray-600 mt-4 text-center">
               Senha padrão: admin123
             </p>
           </div>
@@ -479,54 +478,54 @@ export default function CardapioDigital() {
       )}
 
       {mostrarModal && produtoEditando && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-gray-800 rounded-2xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto border border-gray-700">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto border border-gray-200">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">
+              <h2 className="text-2xl font-bold text-gray-900">
                 {modoEdicao === 'adicionar' ? '➕ Adicionar Produto' : '✏️ Editar Produto'}
               </h2>
-              <button onClick={() => setMostrarModal(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setMostrarModal(false)} className="text-gray-500 hover:text-gray-900">
                 <X size={28} />
               </button>
             </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">Nome do Produto</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Nome do Produto</label>
                 <input
                   type="text"
                   value={produtoEditando.nome}
                   onChange={(e) => setProdutoEditando({...produtoEditando, nome: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-700 border-2 border-gray-600 text-white rounded-xl focus:outline-none focus:border-orange-500"
+                  className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500"
                   placeholder="Ex: X-Bacon Especial"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">Descrição</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Descrição</label>
                 <textarea
                   value={produtoEditando.descricao}
                   onChange={(e) => setProdutoEditando({...produtoEditando, descricao: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-700 border-2 border-gray-600 text-white rounded-xl focus:outline-none focus:border-orange-500"
+                  className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500"
                   placeholder="Ex: Pão, hambúrguer 150g, bacon, queijo..."
                   rows="3"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">Preço (R$)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Preço (R$)</label>
                 <input
                   type="number"
                   step="0.01"
                   value={produtoEditando.preco}
                   onChange={(e) => setProdutoEditando({...produtoEditando, preco: parseFloat(e.target.value)})}
-                  className="w-full px-4 py-3 bg-gray-700 border-2 border-gray-600 text-white rounded-xl focus:outline-none focus:border-orange-500"
+                  className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500"
                   placeholder="Ex: 22.90"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">Imagem do Produto</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Imagem do Produto</label>
                 <div className="flex gap-3">
                   <input
                     type="file"
@@ -546,24 +545,24 @@ export default function CardapioDigital() {
                         reader.readAsDataURL(file);
                       }
                     }}
-                    className="flex-1 px-4 py-3 bg-gray-700 border-2 border-gray-600 text-white rounded-xl focus:outline-none focus:border-orange-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-500 file:text-white hover:file:bg-orange-600 file:cursor-pointer"
+                    className="flex-1 px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-600 file:text-white hover:file:bg-red-700 file:cursor-pointer"
                   />
                   <button
                     type="button"
                     onClick={() => setProdutoEditando({...produtoEditando, imagem: ''})}
-                    className="px-4 py-2 bg-gray-700 text-gray-300 rounded-xl hover:bg-gray-600 transition border border-gray-600"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition border border-gray-200"
                   >
                     Limpar
                   </button>
                 </div>
-                <p className="text-xs text-gray-400 mt-2">
+                <p className="text-xs text-gray-500 mt-2">
                   📁 JPG, PNG, WEBP | Max: 1MB | Dica: comprima em tinypng.com
                 </p>
               </div>
 
               {produtoEditando.imagem && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">✅ Preview</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">✅ Preview</label>
                   <div className="relative">
                     <img 
                       src={produtoEditando.imagem} 
@@ -578,13 +577,13 @@ export default function CardapioDigital() {
             <div className="flex gap-4 mt-6">
               <button
                 onClick={() => setMostrarModal(false)}
-                className="flex-1 bg-gray-700 text-white py-3 rounded-xl hover:bg-gray-600 transition font-semibold border border-gray-600"
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition font-semibold border border-gray-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={salvarProduto}
-                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl hover:from-green-600 hover:to-emerald-600 transition font-semibold flex items-center justify-center gap-2 shadow-xl"
+                className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-xl hover:from-green-700 hover:to-emerald-700 transition font-semibold flex items-center justify-center gap-2 shadow-xl"
               >
                 <Save size={20} />
                 Salvar
@@ -595,18 +594,18 @@ export default function CardapioDigital() {
       )}
 
       {mostrarQRCodes && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
-          <div className="bg-gray-800 rounded-2xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto border border-gray-700">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
+          <div className="bg-blue-50 rounded-2xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto border border-blue-200">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-white">🔲 Gerador de QR Codes</h2>
-              <button onClick={() => setMostrarQRCodes(false)} className="text-gray-400 hover:text-white">
+              <h2 className="text-3xl font-bold text-blue-900">🔲 Gerador de QR Codes</h2>
+              <button onClick={() => setMostrarQRCodes(false)} className="text-blue-700 hover:text-blue-900">
                 <X size={28} />
               </button>
             </div>
 
-            <div className="bg-blue-900 bg-opacity-50 border-2 border-blue-500 rounded-xl p-4 mb-6">
-              <h3 className="font-bold text-blue-200 mb-2">📋 Como usar:</h3>
-              <ol className="text-sm text-blue-100 space-y-1 list-decimal list-inside">
+            <div className="bg-blue-100 bg-opacity-60 border-2 border-blue-200 rounded-xl p-4 mb-6">
+              <h3 className="font-bold text-blue-900 mb-2">📋 Como usar:</h3>
+              <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
                 <li>Defina quantas mesas você tem</li>
                 <li>Baixe os QR Codes</li>
                 <li>Imprima e cole nas mesas</li>
@@ -615,7 +614,7 @@ export default function CardapioDigital() {
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-blue-900 mb-2">
                 Quantas mesas?
               </label>
               <input
@@ -624,7 +623,7 @@ export default function CardapioDigital() {
                 max="100"
                 value={numeroMesas}
                 onChange={(e) => setNumeroMesas(parseInt(e.target.value) || 1)}
-                className="w-full px-4 py-3 bg-gray-700 border-2 border-gray-600 text-white rounded-xl focus:outline-none focus:border-orange-500 text-lg"
+                className="w-full px-4 py-3 bg-white border-2 border-blue-200 text-blue-900 rounded-xl focus:outline-none focus:border-red-500 text-lg"
               />
             </div>
 
@@ -634,7 +633,7 @@ export default function CardapioDigital() {
                 const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlMesa)}`;
                 
                 return (
-                  <div key={mesa} className="bg-gray-700 rounded-xl p-4 text-center border-2 border-gray-600 hover:border-orange-500 transition">
+                  <div key={mesa} className="bg-gray-50 rounded-xl p-4 text-center border-2 border-blue-200 hover:border-orange-500 transition">
                     <div className="bg-white p-2 rounded-lg mb-2">
                       <img 
                         src={qrCodeUrl} 
@@ -642,11 +641,11 @@ export default function CardapioDigital() {
                         className="w-full h-auto"
                       />
                     </div>
-                    <p className="font-bold text-lg text-white">Mesa {mesa}</p>
+                    <p className="font-bold text-lg text-blue-900">Mesa {mesa}</p>
                     <a
                       href={qrCodeUrl}
                       download={`mesa-${mesa}.png`}
-                      className="text-xs text-cyan-400 hover:text-cyan-300 underline mt-1 inline-block"
+                      className="text-xs text-cyan-600 hover:text-cyan-500 underline mt-1 inline-block"
                     >
                       Baixar PNG
                     </a>
@@ -655,8 +654,8 @@ export default function CardapioDigital() {
               })}
             </div>
 
-            <div className="mt-6 bg-yellow-900 bg-opacity-50 border-2 border-yellow-500 rounded-xl p-4">
-              <p className="text-sm text-yellow-100">
+            <div className="mt-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
+              <p className="text-sm text-yellow-900">
                 <strong>💡 Dica:</strong> Imprima em papel adesivo ou plastifique!
               </p>
             </div>
@@ -665,9 +664,9 @@ export default function CardapioDigital() {
       )}
 
       {mostrarCarrinho && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex justify-end backdrop-blur-sm">
-          <div className="bg-gray-800 w-full max-w-md h-full overflow-y-auto shadow-2xl border-l-4 border-orange-500">
-            <div className="sticky top-0 bg-gradient-to-r from-orange-600 to-red-600 text-white p-6 shadow-xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md h-full overflow-y-auto shadow-2xl border-l-4 border-orange-400">
+            <div className="sticky top-0 bg-gradient-to-r from-red-600 to-orange-600 text-white p-6 shadow-xl">
               <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-bold">🛒 Seu Pedido</h2>
                 <button
@@ -683,45 +682,45 @@ export default function CardapioDigital() {
               {carrinho.length === 0 ? (
                 <div className="text-center py-12">
                   <ShoppingCart size={64} className="mx-auto text-gray-600 mb-4" />
-                  <p className="text-gray-400 text-lg">Seu carrinho está vazio</p>
+                  <p className="text-gray-600 text-lg">Seu carrinho está vazio</p>
                   <p className="text-gray-500 text-sm mt-2">Adicione itens deliciosos!</p>
                 </div>
               ) : (
                 <>
                   {carrinho.map(item => (
-                    <div key={item.id} className="bg-gray-700 rounded-xl p-4 mb-4 shadow-lg border border-gray-600">
+                    <div key={item.id} className="bg-white rounded-xl p-4 mb-4 shadow border border-gray-200">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex-1">
-                          <h3 className="font-bold text-white text-lg">{item.nome}</h3>
-                          <p className="text-orange-400 font-semibold mt-1">R$ {item.preco.toFixed(2)}</p>
+                          <h3 className="font-bold text-gray-900 text-lg">{item.nome}</h3>
+                          <p className="text-red-600 font-semibold mt-1">R$ {item.preco.toFixed(2)}</p>
                         </div>
                         <button
                           onClick={() => removerDoCarrinho(item.id)}
-                          className="text-red-400 hover:text-red-300 hover:bg-red-900 hover:bg-opacity-30 p-2 rounded-lg transition"
+                          className="text-red-500 hover:text-red-700 p-2 rounded-lg transition"
                         >
                           <Trash2 size={20} />
                         </button>
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 bg-gray-600 rounded-xl p-2">
+                        <div className="flex items-center gap-3 bg-gray-100 rounded-xl p-2">
                           <button
                             onClick={() => diminuirQuantidade(item.id)}
                             className="bg-red-500 text-white hover:bg-red-600 w-9 h-9 rounded-lg flex items-center justify-center transition"
                           >
                             <Minus size={18} />
                           </button>
-                          <span className="font-bold text-xl text-white w-10 text-center">{item.quantidade}</span>
+                          <span className="font-bold text-xl text-gray-900 w-10 text-center">{item.quantidade}</span>
                           <button
                             onClick={() => aumentarQuantidade(item.id)}
-                            className="bg-green-500 text-white hover:bg-green-600 w-9 h-9 rounded-lg flex items-center justify-center transition"
+                            className="bg-green-600 text-white hover:bg-green-700 w-9 h-9 rounded-lg flex items-center justify-center transition"
                           >
                             <Plus size={18} />
                           </button>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs text-gray-400">Subtotal</p>
-                          <p className="font-bold text-xl text-white">
+                          <p className="text-xs text-gray-500">Subtotal</p>
+                          <p className="font-bold text-xl text-gray-900">
                             R$ {(item.preco * item.quantidade).toFixed(2)}
                           </p>
                         </div>
@@ -729,17 +728,17 @@ export default function CardapioDigital() {
                     </div>
                   ))}
 
-                  <div className="border-t-2 border-gray-600 pt-6 mt-6">
-                    <div className="flex justify-between items-center mb-6 bg-gray-700 p-4 rounded-xl">
-                      <span className="text-xl font-bold text-gray-300">TOTAL:</span>
-                      <span className="text-4xl font-bold text-orange-400">
+                  <div className="border-t-2 border-gray-200 pt-6 mt-6">
+                    <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl">
+                      <span className="text-xl font-bold text-gray-700">TOTAL:</span>
+                      <span className="text-4xl font-bold text-red-600">
                         R$ {calcularTotal().toFixed(2)}
                       </span>
                     </div>
 
                     <button
                       onClick={enviarParaWhatsApp}
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-5 rounded-xl font-bold text-xl hover:from-green-600 hover:to-emerald-600 transition shadow-2xl flex items-center justify-center gap-3"
+                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-5 rounded-xl font-bold text-xl hover:from-green-700 hover:to-emerald-700 transition shadow-2xl flex items-center justify-center gap-3"
                     >
                       <Send size={26} />
                       Enviar Pedido via WhatsApp
