@@ -438,18 +438,34 @@ export default function CardapioDigital() {
       </div>
 
       {carrinho.length > 0 && !mostrarCarrinho && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 animate-bounce">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 animate-bounce w-full px-3 sm:px-0">
           <button
             onClick={() => setMostrarCarrinho(true)}
-            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-full shadow-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all mx-auto"
+            className="
+              bg-gradient-to-r from-green-600 to-emerald-600
+              hover:from-green-700 hover:to-emerald-700
+              text-white
+              px-4 py-3 sm:px-8 sm:py-4
+              rounded-full shadow-2xl
+              flex items-center justify-center gap-2 sm:gap-3
+              font-bold
+              text-sm sm:text-lg
+              transition-all
+              max-w-full sm:max-w-none
+              mx-auto
+              whitespace-nowrap
+            "
           >
-            <ShoppingCart size={28} />
-            Finalizar Pedido
-            <span className="bg-white text-green-600 px-3 py-1 rounded-full text-sm">
+            <ShoppingCart size={20} className="sm:w-7 sm:h-7" />
+
+            <span>Finalizar Pedido</span>
+
+            <span className="bg-white text-green-600 px-2 py-1 rounded-full text-xs sm:text-sm">
               {carrinho.reduce((total, item) => total + Number(item.quantidade), 0)} itens
             </span>
           </button>
         </div>
+
       )}
 
       {mostrarLogin && (
