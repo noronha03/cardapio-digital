@@ -276,12 +276,12 @@ export default function CardapioDigital() {
         )}
         
         <div className="relative">
-          <img src={produto.imagem} alt={produto.nome} className="w-full h-40 sm:h-48 md:h-52 object-cover" />
+          <img src={produto.imagem} alt={produto.nome} className="w-full h-52 object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-40"></div>
         </div>
         
         <div className="p-5">
-          <h3 className="w-full h-40 sm:h-48 md:h-52 object-cover">{produto.nome}</h3>
+          <h3 className="font-bold text-xl text-gray-800 mb-2">{produto.nome}</h3>
           <p className="text-gray-600 text-sm mb-4 line-clamp-2">{produto.descricao}</p>
           
           <div className="flex justify-between items-center mb-4">
@@ -350,7 +350,7 @@ export default function CardapioDigital() {
                   onClick={() => setMostrarQRCodes(true)}
                   className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition shadow-lg flex items-center gap-2"
                 >
-                  <span className="text-xl sm:text-2xl md:text-3xl font-bold">🔲</span>
+                  <span className="text-xl">🔲</span>
                   QR Codes
                 </button>
               )}
@@ -358,7 +358,7 @@ export default function CardapioDigital() {
               {!mesaAtual && !isAdmin ? (
                 <button
                   onClick={() => setMostrarLogin(true)}
-                  className="px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base"
+                  className="bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-50 transition shadow-lg flex items-center gap-2 font-semibold"
                 >
                   <Lock size={18} />
                   Admin
@@ -406,7 +406,7 @@ export default function CardapioDigital() {
               </button>
             )}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {produtos.hamburgueres.map(produto => (
               <CardProduto key={produto.id} produto={produto} categoria="hamburgueres" />
             ))}
@@ -429,7 +429,7 @@ export default function CardapioDigital() {
               </button>
             )}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {produtos.bebidas.map(produto => (
               <CardProduto key={produto.id} produto={produto} categoria="bebidas" />
             ))}
@@ -714,7 +714,7 @@ export default function CardapioDigital() {
                     <div key={item.id} className="bg-white rounded-xl p-4 mb-4 shadow border border-gray-200">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex-1">
-                          <h3 className="w-full h-40 sm:h-48 md:h-52 object-cover">{item.nome}</h3>
+                          <h3 className="font-bold text-gray-900 text-lg">{item.nome}</h3>
                           <p className="text-red-600 font-semibold mt-1">R$ {item.preco.toFixed(2)}</p>
                         </div>
                         <button
