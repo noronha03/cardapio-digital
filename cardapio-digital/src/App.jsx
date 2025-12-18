@@ -12,6 +12,7 @@ export default function CardapioDigital() {
   const [modoEdicao, setModoEdicao] = useState('adicionar');
   const [mostrarQRCodes, setMostrarQRCodes] = useState(false);
   const [numeroMesas, setNumeroMesas] = useState(10);
+  const [observacoes, setObservacoes] = useState('');
   
   const [mesaAtual, setMesaAtual] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -238,10 +239,16 @@ export default function CardapioDigital() {
     
     mensagem += `*TOTAL: R$ ${calcularTotal().toFixed(2)}*`;
 
+    if (observacoes.trim()) {
+      mensagem += `\n\n*📝 OBSERVAÇÕES:*\n${observacoes}`;
+    }
+
     const numeroWhatsApp = '554796305604';
     
     const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
+    
+    setObservacoes('');
   };
 
   const CardProduto = ({ produto, categoria }) => {
@@ -730,6 +737,19 @@ export default function CardapioDigital() {
                   ))}
 
                   <div className="border-t-2 border-gray-200 pt-6 mt-6">
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        📝 Observações (opcional)
+                      </label>
+                      <textarea
+                        value={observacoes}
+                        onChange={(e) => setObservacoes(e.target.value)}
+                        placeholder="Ex: Sem cebola, bem passado, maionese extra..."
+                        className="w-full px-3 py-2 bg-gray-50 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500 text-sm resize-none"
+                        rows="3"
+                      />
+                    </div>
+
                     <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl">
                       <span className="text-xl font-bold text-gray-700">TOTAL:</span>
                       <span className="text-4xl font-bold text-red-600">
