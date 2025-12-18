@@ -438,7 +438,7 @@ export default function CardapioDigital() {
       </div>
 
       {carrinho.length > 0 && !mostrarCarrinho && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 animate-bounce w-full px-3 sm:px-0">
+        <div className="fixed bottom-4 inset-x-0 z-40 animate-bounce flex justify-center px-3">
           <button
             onClick={() => setMostrarCarrinho(true)}
             className="
@@ -451,8 +451,6 @@ export default function CardapioDigital() {
               font-bold
               text-sm sm:text-lg
               transition-all
-              max-w-full sm:max-w-none
-              mx-auto
               whitespace-nowrap
             "
           >
@@ -465,6 +463,7 @@ export default function CardapioDigital() {
             </span>
           </button>
         </div>
+
 
       )}
 
