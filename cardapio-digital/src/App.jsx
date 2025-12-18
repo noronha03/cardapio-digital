@@ -12,7 +12,6 @@ export default function CardapioDigital() {
   const [modoEdicao, setModoEdicao] = useState('adicionar');
   const [mostrarQRCodes, setMostrarQRCodes] = useState(false);
   const [numeroMesas, setNumeroMesas] = useState(10);
-  const [observacoes, setObservacoes] = useState('');
   
   const [mesaAtual, setMesaAtual] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -239,16 +238,10 @@ export default function CardapioDigital() {
     
     mensagem += `*TOTAL: R$ ${calcularTotal().toFixed(2)}*`;
 
-    if (observacoes.trim()) {
-      mensagem += `\n\n*📝 OBSERVAÇÕES:*\n${observacoes}`;
-    }
-
     const numeroWhatsApp = '554796305604';
     
     const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
-    
-    setObservacoes('');
   };
 
   const CardProduto = ({ produto, categoria }) => {
@@ -331,7 +324,7 @@ export default function CardapioDigital() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
       <header className="bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-2xl sticky top-0 z-50 border-b-4 border-orange-400">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="container mx-auto px-4 py-6">
           {mesaAtual && (
             <div className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl mb-4 text-center font-bold text-lg shadow-xl animate-pulse">
               📍 MESA {mesaAtual}
@@ -340,12 +333,12 @@ export default function CardapioDigital() {
           
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold drop-shadow-lg text-gray-900">🍔 Burger House</h1>
+              <h1 className="text-4xl font-bold drop-shadow-lg text-gray-900">🍔 Burger House</h1>
               <p className="text-green text-sm mt-1">Os melhores hambúrgueres da cidade</p>
             </div>
           
-            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
-              {!mesaAtual && isAdmin && (
+            <div className="flex items-center gap-3">
+              {isAdmin && (
                 <button
                   onClick={() => setMostrarQRCodes(true)}
                   className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition shadow-lg flex items-center gap-2"
@@ -355,7 +348,7 @@ export default function CardapioDigital() {
                 </button>
               )}
 
-              {!mesaAtual && !isAdmin ? (
+              {!isAdmin ? (
                 <button
                   onClick={() => setMostrarLogin(true)}
                   className="bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-50 transition shadow-lg flex items-center gap-2 font-semibold"
@@ -363,7 +356,7 @@ export default function CardapioDigital() {
                   <Lock size={18} />
                   Admin
                 </button>
-              ) : !mesaAtual && isAdmin ? (
+              ) : (
                 <button
                   onClick={fazerLogout}
                   className="bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-yellow-300 transition shadow-lg flex items-center gap-2 font-semibold"
@@ -371,7 +364,7 @@ export default function CardapioDigital() {
                   <LogOut size={18} />
                   Sair
                 </button>
-              ) : null}
+              )}
 
               <button
                 onClick={() => setMostrarCarrinho(!mostrarCarrinho)}
@@ -393,7 +386,7 @@ export default function CardapioDigital() {
         <section className="mb-16">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">🍔 Hambúrgueres</h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-2">🍔 Hambúrgueres</h2>
               <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-full"></div>
             </div>
             {isAdmin && (
@@ -438,33 +431,18 @@ export default function CardapioDigital() {
       </div>
 
       {carrinho.length > 0 && !mostrarCarrinho && (
-        <div className="fixed bottom-4 inset-x-0 z-40 animate-bounce flex justify-center px-3">
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 animate-bounce">
           <button
             onClick={() => setMostrarCarrinho(true)}
-            className="
-              bg-gradient-to-r from-green-600 to-emerald-600
-              hover:from-green-700 hover:to-emerald-700
-              text-white
-              px-4 py-3 sm:px-8 sm:py-4
-              rounded-full shadow-2xl
-              flex items-center justify-center gap-2 sm:gap-3
-              font-bold
-              text-sm sm:text-lg
-              transition-all
-              whitespace-nowrap
-            "
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-3 font-bold text-lg transition-all"
           >
-            <ShoppingCart size={20} className="sm:w-7 sm:h-7" />
-
-            <span>Finalizar Pedido</span>
-
-            <span className="bg-white text-green-600 px-2 py-1 rounded-full text-xs sm:text-sm">
+            <ShoppingCart size={28} />
+            Finalizar Pedido
+            <span className="bg-white text-green-600 px-3 py-1 rounded-full text-sm">
               {carrinho.reduce((total, item) => total + Number(item.quantidade), 0)} itens
             </span>
           </button>
         </div>
-
-
       )}
 
       {mostrarLogin && (
@@ -752,19 +730,6 @@ export default function CardapioDigital() {
                   ))}
 
                   <div className="border-t-2 border-gray-200 pt-6 mt-6">
-                    <div className="mb-4">
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        📝 Observações (opcional)
-                      </label>
-                      <textarea
-                        value={observacoes}
-                        onChange={(e) => setObservacoes(e.target.value)}
-                        placeholder="Ex: Sem cebola, bem passado, maionese extra..."
-                        className="w-full px-3 py-2 bg-gray-50 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500 text-sm resize-none"
-                        rows="3"
-                      />
-                    </div>
-
                     <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl">
                       <span className="text-xl font-bold text-gray-700">TOTAL:</span>
                       <span className="text-4xl font-bold text-red-600">
