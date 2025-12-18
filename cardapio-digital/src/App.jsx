@@ -345,7 +345,7 @@ export default function CardapioDigital() {
             </div>
           
             <div className="flex items-center gap-3">
-              {isAdmin && (
+              {!mesaAtual && isAdmin && (
                 <button
                   onClick={() => setMostrarQRCodes(true)}
                   className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition shadow-lg flex items-center gap-2"
@@ -355,7 +355,7 @@ export default function CardapioDigital() {
                 </button>
               )}
 
-              {!isAdmin ? (
+              {!mesaAtual && !isAdmin ? (
                 <button
                   onClick={() => setMostrarLogin(true)}
                   className="bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-50 transition shadow-lg flex items-center gap-2 font-semibold"
@@ -363,7 +363,7 @@ export default function CardapioDigital() {
                   <Lock size={18} />
                   Admin
                 </button>
-              ) : (
+              ) : !mesaAtual && isAdmin ? (
                 <button
                   onClick={fazerLogout}
                   className="bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-yellow-300 transition shadow-lg flex items-center gap-2 font-semibold"
@@ -371,7 +371,7 @@ export default function CardapioDigital() {
                   <LogOut size={18} />
                   Sair
                 </button>
-              )}
+              ) : null}
 
               <button
                 onClick={() => setMostrarCarrinho(!mostrarCarrinho)}
@@ -441,7 +441,7 @@ export default function CardapioDigital() {
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 animate-bounce">
           <button
             onClick={() => setMostrarCarrinho(true)}
-            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-3 font-bold text-lg transition-all"
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-full shadow-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all mx-auto"
           >
             <ShoppingCart size={28} />
             Finalizar Pedido
