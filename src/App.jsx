@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Plus, Minus, Trash2, Send, Edit, Lock, LogOut, X, Save } from 'lucide-react';
+import { CONFIG, validarConfiguracao } from './config/configuracoes';
 
 export default function CardapioDigital() {
   const [carrinho, setCarrinho] = useState([]);
@@ -12,85 +13,27 @@ export default function CardapioDigital() {
   const [modoEdicao, setModoEdicao] = useState('adicionar');
   const [mostrarQRCodes, setMostrarQRCodes] = useState(false);
   const [numeroMesas, setNumeroMesas] = useState(10);
+  const [observacoes, setObservacoes] = useState('');
+  
   
   const [mesaAtual, setMesaAtual] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('mesa') || null;
   });
 
-  const SENHA_ADMIN = 'admin123';
+  const SENHA_ADMIN = CONFIG.admin.senha;
 
-  const produtosIniciais = {
-    hamburgueres: [
-      {
-        id: 1,
-        nome: 'X-Burger Clássico',
-        descricao: 'Pão, hambúrguer 150g, queijo, alface, tomate',
-        preco: 18.90,
-        categoria: 'hamburgueres',
-        imagem: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop'
-      },
-      {
-        id: 2,
-        nome: 'X-Bacon',
-        descricao: 'Pão, hambúrguer 150g, queijo, bacon crocante',
-        preco: 22.90,
-        categoria: 'hamburgueres',
-        imagem: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=300&fit=crop'
-      },
-      {
-        id: 3,
-        nome: 'X-Salada',
-        descricao: 'Pão, hambúrguer 150g, queijo, alface, tomate, milho',
-        preco: 20.90,
-        categoria: 'hamburgueres',
-        imagem: 'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=400&h=300&fit=crop'
-      },
-      {
-        id: 4,
-        nome: 'X-Tudo',
-        descricao: 'Pão, hambúrguer 180g, queijo, bacon, ovo, salada',
-        preco: 28.90,
-        categoria: 'hamburgueres',
-        imagem: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400&h=300&fit=crop'
-      }
-    ],
-    bebidas: [
-      {
-        id: 5,
-        nome: 'Coca-Cola 350ml',
-        descricao: 'Refrigerante lata',
-        preco: 5.00,
-        categoria: 'bebidas',
-        imagem: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400&h=300&fit=crop'
-      },
-      {
-        id: 6,
-        nome: 'Suco Natural',
-        descricao: 'Laranja, limão ou morango - 500ml',
-        preco: 8.00,
-        categoria: 'bebidas',
-        imagem: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=300&fit=crop'
-      },
-      {
-        id: 7,
-        nome: 'Água Mineral',
-        descricao: 'Garrafa 500ml',
-        preco: 3.00,
-        categoria: 'bebidas',
-        imagem: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400&h=300&fit=crop'
-      }
-    ]
-  };
+  const produtosIniciais = CONFIG.produtosIniciais;
 
   const [produtos, setProdutos] = useState(() => {
     const salvos = localStorage.getItem('cardapio_produtos');
     return salvos ? JSON.parse(salvos) : produtosIniciais;
   });
 
+  // Validar configurações ao carregar
   useEffect(() => {
-    localStorage.setItem('cardapio_produtos', JSON.stringify(produtos));
-  }, [produtos]);
+    validarConfiguracao();
+  }, []);
 
   const fazerLogin = () => {
     if (senhaDigitada === SENHA_ADMIN) {
@@ -238,10 +181,16 @@ export default function CardapioDigital() {
     
     mensagem += `*TOTAL: R$ ${calcularTotal().toFixed(2)}*`;
 
-    const numeroWhatsApp = '554796305604';
+    if (observacoes.trim()) {
+      mensagem += `\n\n*📝 OBSERVAÇÕES:*\n${observacoes}`;
+    }
+
+    const numeroWhatsApp = CONFIG.whatsapp.numero;
     
     const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
+    
+    setObservacoes('');
   };
 
   const CardProduto = ({ produto, categoria }) => {
@@ -333,8 +282,8 @@ export default function CardapioDigital() {
           
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold drop-shadow-lg text-gray-900">🍔 Burger House</h1>
-              <p className="text-green text-sm mt-1">Os melhores hambúrgueres da cidade</p>
+              <h1 className="text-4xl font-bold drop-shadow-lg text-gray-900">{CONFIG.loja.nome}</h1>
+              <p className="text-orange-100 text-sm mt-1">{CONFIG.loja.slogan}</p>
             </div>
           
             <div className="flex items-center gap-3">
@@ -431,18 +380,19 @@ export default function CardapioDigital() {
       </div>
 
       {carrinho.length > 0 && !mostrarCarrinho && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 animate-bounce">
-          <button
-            onClick={() => setMostrarCarrinho(true)}
-            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-full shadow-2xl flex items-center justify-center gap-3 font-bold text-lg transition-all mx-auto"
-          >
-            <ShoppingCart size={28} />
-            Finalizar Pedido
-            <span className="bg-white text-green-600 px-3 py-1 rounded-full text-sm">
-              {carrinho.reduce((total, item) => total + Number(item.quantidade), 0)} itens
-            </span>
-          </button>
-        </div>
+          <div className="fixed bottom-6 left-0 right-0 z-40 flex justify-center px-4">
+            <button
+              onClick={() => setMostrarCarrinho(true)}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-full shadow-2xl flex items-center gap-2 md:gap-3 font-bold text-base md:text-lg transition-all animate-pulse hover:animate-none max-w-xs md:max-w-md"
+            >
+              <ShoppingCart size={24} className="flex-shrink-0" />
+              <span className="hidden sm:inline">Finalizar Pedido</span>
+              <span className="sm:hidden">Finalizar</span>
+              <span className="bg-white text-green-600 px-2 md:px-3 py-0.5 md:py-1 rounded-full text-xs md:text-sm font-extrabold flex-shrink-0">
+                {carrinho.reduce((total, item) => total + Number(item.quantidade), 0)}
+              </span>
+            </button>
+          </div>
       )}
 
       {mostrarLogin && (
@@ -730,6 +680,21 @@ export default function CardapioDigital() {
                   ))}
 
                   <div className="border-t-2 border-gray-200 pt-6 mt-6">
+                    <div className="mb-4">
+                      {CONFIG.observacoes.habilitado && (
+                      <>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          {CONFIG.observacoes.label}
+                        </label>
+                        <textarea
+                          value={observacoes}
+                          onChange={(e) => setObservacoes(e.target.value)}
+                          placeholder={CONFIG.observacoes.placeholder}
+                            />
+                        </>
+                      )}
+                    </div>
+
                     <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl">
                       <span className="text-xl font-bold text-gray-700">TOTAL:</span>
                       <span className="text-4xl font-bold text-red-600">
