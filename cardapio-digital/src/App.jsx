@@ -677,36 +677,33 @@ export default function CardapioDigital() {
                     </div>
                   ))}
 
-                  <div className="border-t-2 border-gray-200 pt-6 mt-6">
+                  <div className="w-full border-t-2 border-gray-200 pt-6 mt-6">
                     <div className="mb-4">
                       {CONFIG.observacoes.habilitado && (
-                      <>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          {CONFIG.observacoes.label}
-                        </label>
-                        <textarea
-                          value={observacoes}
-                          onChange={(e) => setObservacoes(e.target.value)}
-                          placeholder={CONFIG.observacoes.placeholder}
-                        />
+                        <>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            {CONFIG.observacoes.label}
+                          </label>
+
+                          <textarea
+                            value={observacoes}
+                            onChange={(e) => setObservacoes(e.target.value)}
+                            placeholder={CONFIG.observacoes.placeholder}
+                            rows={3}
+                            className="
+                              w-full
+                              px-3 py-2
+                              bg-gray-50
+                              border-2 border-gray-200
+                              rounded-xl
+                              text-sm
+                              focus:outline-none focus:border-red-500
+                              resize-none
+                            "
+                          />
                         </>
                       )}
                     </div>
-
-                    <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl">
-                      <span className="text-xl font-bold text-gray-700">TOTAL:</span>
-                      <span className="text-4xl font-bold text-red-600">
-                        R$ {calcularTotal().toFixed(2)}
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={enviarParaWhatsApp}
-                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-5 rounded-xl font-bold text-xl hover:from-green-700 hover:to-emerald-700 transition shadow-2xl flex items-center justify-center gap-3"
-                    >
-                      <Send size={26} />
-                      Enviar Pedido via WhatsApp
-                    </button>
                   </div>
                 </>
               )}
