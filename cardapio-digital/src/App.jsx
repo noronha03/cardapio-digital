@@ -14,6 +14,10 @@ export default function CardapioDigital() {
   const [mostrarQRCodes, setMostrarQRCodes] = useState(false);
   const [numeroMesas, setNumeroMesas] = useState(10);
   const [observacoes, setObservacoes] = useState('');
+<<<<<<< HEAD:src/App.jsx
+  
+=======
+>>>>>>> 11fd6e63c3b5111aabeb477cbf9e887a44257e66:cardapio-digital/src/App.jsx
   
   
   const [mesaAtual, setMesaAtual] = useState(() => {
@@ -185,7 +189,15 @@ export default function CardapioDigital() {
       mensagem += `\n\n*📝 OBSERVAÇÕES:*\n${observacoes}`;
     }
 
+<<<<<<< HEAD
     const numeroWhatsApp = CONFIG.whatsapp.numero;
+=======
+<<<<<<< HEAD:src/App.jsx
+    const numeroWhatsApp = CONFIG.whatsapp.numero;
+=======
+    const numeroWhatsApp = '554796305604';
+>>>>>>> 11fd6e63c3b5111aabeb477cbf9e887a44257e66:cardapio-digital/src/App.jsx
+>>>>>>> 52ba2dd5901d6ea0eea6cb21fd0f60877637ae36
     
     const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
@@ -681,6 +693,10 @@ export default function CardapioDigital() {
 
                   <div className="border-t-2 border-gray-200 pt-6 mt-6">
                     <div className="mb-4">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD:src/App.jsx
+>>>>>>> 52ba2dd5901d6ea0eea6cb21fd0f60877637ae36
                       {CONFIG.observacoes.habilitado && (
                       <>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -693,6 +709,21 @@ export default function CardapioDigital() {
                             />
                         </>
                       )}
+<<<<<<< HEAD
+=======
+=======
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        📝 Observações (opcional)
+                      </label>
+                      <textarea
+                        value={observacoes}
+                        onChange={(e) => setObservacoes(e.target.value)}
+                        placeholder="Ex: Sem cebola, bem passado, maionese extra..."
+                        className="w-full px-3 py-2 bg-gray-50 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500 text-sm resize-none"
+                        rows="3"
+                      />
+>>>>>>> 11fd6e63c3b5111aabeb477cbf9e887a44257e66:cardapio-digital/src/App.jsx
+>>>>>>> 52ba2dd5901d6ea0eea6cb21fd0f60877637ae36
                     </div>
 
                     <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl">
