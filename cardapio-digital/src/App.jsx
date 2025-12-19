@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Plus, Minus, Trash2, Send, Edit, Lock, LogOut, X, Save } from 'lucide-react';
+import { CONFIG, validarConfiguracao } from './config/configuracoes';
 
 export default function CardapioDigital() {
   const [carrinho, setCarrinho] = useState([]);
@@ -19,70 +20,9 @@ export default function CardapioDigital() {
     return params.get('mesa') || null;
   });
 
-  const SENHA_ADMIN = 'admin123';
+  const SENHA_ADMIN = CONFIG.admin.senha;
 
-  const produtosIniciais = {
-    hamburgueres: [
-      {
-        id: 1,
-        nome: 'X-Burger Clássico',
-        descricao: 'Pão, hambúrguer 150g, queijo, alface, tomate',
-        preco: 18.90,
-        categoria: 'hamburgueres',
-        imagem: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop'
-      },
-      {
-        id: 2,
-        nome: 'X-Bacon',
-        descricao: 'Pão, hambúrguer 150g, queijo, bacon crocante',
-        preco: 22.90,
-        categoria: 'hamburgueres',
-        imagem: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=300&fit=crop'
-      },
-      {
-        id: 3,
-        nome: 'X-Salada',
-        descricao: 'Pão, hambúrguer 150g, queijo, alface, tomate, milho',
-        preco: 20.90,
-        categoria: 'hamburgueres',
-        imagem: 'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=400&h=300&fit=crop'
-      },
-      {
-        id: 4,
-        nome: 'X-Tudo',
-        descricao: 'Pão, hambúrguer 180g, queijo, bacon, ovo, salada',
-        preco: 28.90,
-        categoria: 'hamburgueres',
-        imagem: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400&h=300&fit=crop'
-      }
-    ],
-    bebidas: [
-      {
-        id: 5,
-        nome: 'Coca-Cola 350ml',
-        descricao: 'Refrigerante lata',
-        preco: 5.00,
-        categoria: 'bebidas',
-        imagem: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400&h=300&fit=crop'
-      },
-      {
-        id: 6,
-        nome: 'Suco Natural',
-        descricao: 'Laranja, limão ou morango - 500ml',
-        preco: 8.00,
-        categoria: 'bebidas',
-        imagem: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=300&fit=crop'
-      },
-      {
-        id: 7,
-        nome: 'Água Mineral',
-        descricao: 'Garrafa 500ml',
-        preco: 3.00,
-        categoria: 'bebidas',
-        imagem: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400&h=300&fit=crop'
-      }
-    ]
-  };
+  const produtosIniciais = CONFIG.produtosIniciais;
 
   const [produtos, setProdutos] = useState(() => {
     const salvos = localStorage.getItem('cardapio_produtos');
@@ -90,8 +30,8 @@ export default function CardapioDigital() {
   });
 
   useEffect(() => {
-    localStorage.setItem('cardapio_produtos', JSON.stringify(produtos));
-  }, [produtos]);
+    validarConfiguracao();
+  }, []);
 
   const fazerLogin = () => {
     if (senhaDigitada === SENHA_ADMIN) {
@@ -243,7 +183,7 @@ export default function CardapioDigital() {
       mensagem += `\n\n*📝 OBSERVAÇÕES:*\n${observacoes}`;
     }
 
-    const numeroWhatsApp = '554796305604';
+    const numeroWhatsApp = CONFIG.whatsapp.numero;
     
     const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
@@ -340,8 +280,8 @@ export default function CardapioDigital() {
           
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold drop-shadow-lg text-gray-900">🍔 Burger House</h1>
-              <p className="text-green text-sm mt-1">Os melhores hambúrgueres da cidade</p>
+              <h1 className="text-4xl font-bold drop-shadow-lg text-gray-900">{CONFIG.loja.nome}</h1>
+              <p className="text-orange-100 text-sm mt-1">{CONFIG.loja.slogan}</p>
             </div>
           
             <div className="flex items-center gap-3">
@@ -739,16 +679,18 @@ export default function CardapioDigital() {
 
                   <div className="border-t-2 border-gray-200 pt-6 mt-6">
                     <div className="mb-4">
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        📝 Observações (opcional)
-                      </label>
-                      <textarea
-                        value={observacoes}
-                        onChange={(e) => setObservacoes(e.target.value)}
-                        placeholder="Ex: Sem cebola, bem passado, maionese extra..."
-                        className="w-full px-3 py-2 bg-gray-50 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500 text-sm resize-none"
-                        rows="3"
-                      />
+                      {CONFIG.observacoes.habilitado && (
+                      <>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          {CONFIG.observacoes.label}
+                        </label>
+                        <textarea
+                          value={observacoes}
+                          onChange={(e) => setObservacoes(e.target.value)}
+                          placeholder={CONFIG.observacoes.placeholder}
+                        />
+                        </>
+                      )}
                     </div>
 
                     <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl">
