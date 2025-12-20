@@ -164,7 +164,6 @@ export default function CardapioDigital() {
     enviarParaWhatsApp(carrinho, calcularTotal(), mesaAtual, observacoes);
     setObservacoes('');
   };
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
