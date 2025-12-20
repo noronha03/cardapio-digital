@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Plus, Minus, Trash2, Send, Edit, Lock, LogOut, X, Save } from 'lucide-react';
 import { CONFIG, validarConfiguracao } from './config/configuracoes';
+import { enviarParaWhatsApp } from './utils/whatsapp';
+import { Header } from './components/Header';
 
 export default function CardapioDigital() {
   const [carrinho, setCarrinho] = useState([]);
@@ -157,37 +159,8 @@ export default function CardapioDigital() {
     return item ? Number(item.quantidade) : 0;
   };
 
-  const enviarParaWhatsApp = () => {
-    if (carrinho.length === 0) {
-      alert('Adicione itens ao carrinho primeiro!');
-      return;
-    }
-
-    let mensagem = '* NOVO PEDIDO*\n';
-    
-    if (mesaAtual) {
-      mensagem += `* MESA ${mesaAtual}*\n`;
-    }
-    
-    mensagem += '\n';
-    
-    carrinho.forEach(item => {
-      mensagem += `*${item.quantidade}x ${item.nome}*\n`;
-      mensagem += `R$ ${item.preco.toFixed(2)} cada\n`;
-      mensagem += `Subtotal: R$ ${(item.preco * item.quantidade).toFixed(2)}\n\n`;
-    });
-    
-    mensagem += `*TOTAL: R$ ${calcularTotal().toFixed(2)}*`;
-
-    if (observacoes.trim()) {
-      mensagem += `\n\n*📝 OBSERVAÇÕES:*\n${observacoes}`;
-    }
-
-    const numeroWhatsApp = CONFIG.whatsapp.numero;
-    
-    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
-    window.open(url, '_blank');
-    
+  const handleEnviarWhatsApp = () => {
+    enviarParaWhatsApp(carrinho, calcularTotal(), mesaAtual, observacoes);
     setObservacoes('');
   };
 
@@ -270,64 +243,15 @@ export default function CardapioDigital() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <header className="bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-2xl sticky top-0 z-50 border-b-4 border-orange-400">
-        <div className="container mx-auto px-4 py-6">
-          {mesaAtual && (
-            <div className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl mb-4 text-center font-bold text-lg shadow-xl animate-pulse">
-              📍 MESA {mesaAtual}
-            </div>
-          )}
-          
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-bold drop-shadow-lg text-gray-900">{CONFIG.loja.nome}</h1>
-              <p className="text-orange-100 text-sm mt-1">{CONFIG.loja.slogan}</p>
-            </div>
-          
-            <div className="flex items-center gap-3">
-              {!mesaAtual && isAdmin && (
-                <button
-                  onClick={() => setMostrarQRCodes(true)}
-                  className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition shadow-lg flex items-center gap-2"
-                >
-                  <span className="text-xl">🔲</span>
-                  QR Codes
-                </button>
-              )}
-
-              {!mesaAtual && !isAdmin ? (
-                <button
-                  onClick={() => setMostrarLogin(true)}
-                  className="bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-50 transition shadow-lg flex items-center gap-2 font-semibold"
-                >
-                  <Lock size={18} />
-                  Admin
-                </button>
-              ) : !mesaAtual && isAdmin ? (
-                <button
-                  onClick={fazerLogout}
-                  className="bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-yellow-300 transition shadow-lg flex items-center gap-2 font-semibold"
-                >
-                  <LogOut size={18} />
-                  Sair
-                </button>
-              ) : null}
-
-              <button
-                onClick={() => setMostrarCarrinho(!mostrarCarrinho)}
-                className="relative bg-white text-orange-600 p-3 rounded-full hover:bg-orange-50 transition shadow-xl"
-              >
-                <ShoppingCart size={24} />
-                {carrinho.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-green-500 text-white text-sm w-7 h-7 rounded-full flex items-center justify-center font-bold shadow-lg animate-bounce">
-                    {carrinho.reduce((total, item) => total + Number(item.quantidade), 0)}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header 
+        mesaAtual={mesaAtual}
+        isAdmin={isAdmin}
+        contadorCarrinho={carrinho.reduce((total, item) => total + Number(item.quantidade), 0)}
+        onAbrirCarrinho={() => setMostrarCarrinho(!mostrarCarrinho)}
+        onAbrirLogin={() => setMostrarLogin(true)}
+        onLogout={fazerLogout}
+        onAbrirQRCodes={() => setMostrarQRCodes(true)}
+      />
 
       <div className="container mx-auto px-4 py-10">
         <section className="mb-16">
@@ -704,6 +628,20 @@ export default function CardapioDigital() {
                         </>
                       )}
                     </div>
+                    <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl">
+                      <span className="text-xl font-bold text-gray-700">TOTAL:</span>
+                      <span className="text-4xl font-bold text-red-600">
+                        R$ {calcularTotal().toFixed(2)}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={handleEnviarWhatsApp}
+                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-5 rounded-xl font-bold text-xl hover:from-green-700 hover:to-emerald-700 transition shadow-2xl flex items-center justify-center gap-3"
+                    >
+                      <Send size={26} />
+                      Enviar Pedido via WhatsApp
+                    </button>
                   </div>
                 </>
               )}
