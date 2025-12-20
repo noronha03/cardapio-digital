@@ -3,6 +3,7 @@ import { ShoppingCart, Plus, Minus, Trash2, Send, Edit, Lock, LogOut, X, Save } 
 import { CONFIG, validarConfiguracao } from './config/configuracoes';
 import { enviarParaWhatsApp } from './utils/whatsapp';
 import { Header } from './components/Header';
+import { CardProduto } from './components/CardProduto';
 
 export default function CardapioDigital() {
   const [carrinho, setCarrinho] = useState([]);
@@ -164,9 +165,6 @@ export default function CardapioDigital() {
     setObservacoes('');
   };
 
-  const CardProduto = ({ produto, categoria }) => {
-    const quantidadeNoCarrinho = obterQuantidadeNoCarrinho(produto.id);
-
     return (
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-2 relative border border-gray-200">
         {isAdmin && (
@@ -272,7 +270,18 @@ export default function CardapioDigital() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {produtos.hamburgueres.map(produto => (
-              <CardProduto key={produto.id} produto={produto} categoria="hamburgueres" />
+              <CardProduto 
+                key={produto.id} 
+                produto={produto} 
+                categoria="hamburgueres"
+                isAdmin={isAdmin}
+                quantidadeNoCarrinho={obterQuantidadeNoCarrinho(produto.id)}
+                onAdicionar={adicionarAoCarrinho}
+                onAumentar={aumentarQuantidade}
+                onDiminuir={diminuirQuantidade}
+                onEditar={abrirModalEditar}
+                onDeletar={deletarProduto}
+              />
             ))}
           </div>
         </section>
@@ -295,7 +304,18 @@ export default function CardapioDigital() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {produtos.bebidas.map(produto => (
-              <CardProduto key={produto.id} produto={produto} categoria="bebidas" />
+              <CardProduto 
+                key={produto.id} 
+                produto={produto} 
+                categoria="bebidas"
+                isAdmin={isAdmin}
+                quantidadeNoCarrinho={obterQuantidadeNoCarrinho(produto.id)}
+                onAdicionar={adicionarAoCarrinho}
+                onAumentar={aumentarQuantidade}
+                onDiminuir={diminuirQuantidade}
+                onEditar={abrirModalEditar}
+                onDeletar={deletarProduto}
+              />
             ))}
           </div>
         </section>
