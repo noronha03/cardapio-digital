@@ -6,6 +6,7 @@ import { Header } from './components/Header';
 import { CardProduto } from './components/CardProduto';
 import { BotaoFinalizar } from './components/BotaoFinalizar';
 import { ModalLogin } from './components/ModalLogin';
+import { ModalProduto } from './components/ModalProduto';
 
 export default function CardapioDigital() {
   const [carrinho, setCarrinho] = useState([]);
@@ -263,121 +264,14 @@ export default function CardapioDigital() {
         onFechar={() => setMostrarLogin(false)}
       />
 
-      {mostrarModal && produtoEditando && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto border border-gray-200">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {modoEdicao === 'adicionar' ? '➕ Adicionar Produto' : '✏️ Editar Produto'}
-              </h2>
-              <button onClick={() => setMostrarModal(false)} className="text-gray-500 hover:text-gray-900">
-                <X size={28} />
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Nome do Produto</label>
-                <input
-                  type="text"
-                  value={produtoEditando.nome}
-                  onChange={(e) => setProdutoEditando({...produtoEditando, nome: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500"
-                  placeholder="Ex: X-Bacon Especial"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Descrição</label>
-                <textarea
-                  value={produtoEditando.descricao}
-                  onChange={(e) => setProdutoEditando({...produtoEditando, descricao: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500"
-                  placeholder="Ex: Pão, hambúrguer 150g, bacon, queijo..."
-                  rows="3"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Preço (R$)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={produtoEditando.preco}
-                  onChange={(e) => setProdutoEditando({...produtoEditando, preco: parseFloat(e.target.value)})}
-                  className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500"
-                  placeholder="Ex: 22.90"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Imagem do Produto</label>
-                <div className="flex gap-3">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        if (file.size > 1024 * 1024) {
-                          alert('Imagem muito grande! Máximo 1MB.');
-                          e.target.value = '';
-                          return;
-                        }
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setProdutoEditando({...produtoEditando, imagem: reader.result});
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                    className="flex-1 px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-600 file:text-white hover:file:bg-red-700 file:cursor-pointer"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setProdutoEditando({...produtoEditando, imagem: ''})}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition border border-gray-200"
-                  >
-                    Limpar
-                  </button>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  📁 JPG, PNG, WEBP | Max: 1MB | Dica: comprima em tinypng.com
-                </p>
-              </div>
-
-              {produtoEditando.imagem && (
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">✅ Preview</label>
-                  <div className="relative">
-                    <img 
-                      src={produtoEditando.imagem} 
-                      alt="Preview" 
-                      className="w-full h-64 object-cover rounded-xl border-4 border-green-500"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-4 mt-6">
-              <button
-                onClick={() => setMostrarModal(false)}
-                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition font-semibold border border-gray-200"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={salvarProduto}
-                className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-xl hover:from-green-700 hover:to-emerald-700 transition font-semibold flex items-center justify-center gap-2 shadow-xl"
-              >
-                <Save size={20} />
-                Salvar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ModalProduto 
+        mostrar={mostrarModal}
+        modoEdicao={modoEdicao}
+        produto={produtoEditando}
+        onChangeProduto={setProdutoEditando}
+        onSalvar={salvarProduto}
+        onFechar={() => setMostrarModal(false)}
+      />
 
       {mostrarQRCodes && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
