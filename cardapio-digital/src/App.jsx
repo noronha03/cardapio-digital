@@ -5,6 +5,7 @@ import { enviarParaWhatsApp } from './utils/whatsapp';
 import { Header } from './components/Header';
 import { CardProduto } from './components/CardProduto';
 import { BotaoFinalizar } from './components/BotaoFinalizar';
+import { ModalLogin } from './components/ModalLogin';
 
 export default function CardapioDigital() {
   const [carrinho, setCarrinho] = useState([]);
@@ -254,38 +255,13 @@ export default function CardapioDigital() {
         mostrarCarrinho={mostrarCarrinho}
       />
 
-      {mostrarLogin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-200">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-gray-900">🔐 Login Admin</h2>
-              <button onClick={() => setMostrarLogin(false)} className="text-gray-500 hover:text-gray-900">
-                <X size={28} />
-              </button>
-            </div>
-            
-            <input
-              type="password"
-              placeholder="Digite a senha"
-              value={senhaDigitada}
-              onChange={(e) => setSenhaDigitada(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && fazerLogin()}
-              className="w-full px-4 py-4 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl mb-4 focus:outline-none focus:border-red-500 placeholder-gray-400"
-            />
-            
-            <button
-              onClick={fazerLogin}
-              className="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white py-4 rounded-xl hover:from-red-700 hover:to-orange-700 transition font-bold text-lg shadow-xl"
-            >
-              Entrar
-            </button>
-            
-            <p className="text-sm text-gray-600 mt-4 text-center">
-              Senha padrão: admin123
-            </p>
-          </div>
-        </div>
-      )}
+      <ModalLogin 
+        mostrar={mostrarLogin}
+        senhaDigitada={senhaDigitada}
+        onChangeSenha={setSenhaDigitada}
+        onLogin={fazerLogin}
+        onFechar={() => setMostrarLogin(false)}
+      />
 
       {mostrarModal && produtoEditando && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
