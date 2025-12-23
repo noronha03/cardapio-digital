@@ -7,6 +7,7 @@ import { CardProduto } from './components/CardProduto';
 import { BotaoFinalizar } from './components/BotaoFinalizar';
 import { ModalLogin } from './components/ModalLogin';
 import { ModalProduto } from './components/ModalProduto';
+import { ModalQRCodes } from './components/ModalQRCodes';
 
 export default function CardapioDigital() {
   const [carrinho, setCarrinho] = useState([]);
@@ -18,7 +19,6 @@ export default function CardapioDigital() {
   const [produtoEditando, setProdutoEditando] = useState(null);
   const [modoEdicao, setModoEdicao] = useState('adicionar');
   const [mostrarQRCodes, setMostrarQRCodes] = useState(false);
-  const [numeroMesas, setNumeroMesas] = useState(10);
   const [observacoes, setObservacoes] = useState('');
   
   const [mesaAtual, setMesaAtual] = useState(() => {
@@ -273,75 +273,11 @@ export default function CardapioDigital() {
         onFechar={() => setMostrarModal(false)}
       />
 
-      {mostrarQRCodes && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
-          <div className="bg-blue-50 rounded-2xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto border border-blue-200">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-blue-900">🔲 Gerador de QR Codes</h2>
-              <button onClick={() => setMostrarQRCodes(false)} className="text-blue-700 hover:text-blue-900">
-                <X size={28} />
-              </button>
-            </div>
-
-            <div className="bg-blue-100 bg-opacity-60 border-2 border-blue-200 rounded-xl p-4 mb-6">
-              <h3 className="font-bold text-blue-900 mb-2">📋 Como usar:</h3>
-              <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-                <li>Defina quantas mesas você tem</li>
-                <li>Baixe os QR Codes</li>
-                <li>Imprima e cole nas mesas</li>
-                <li>Clientes escaneiam e o pedido vem identificado!</li>
-              </ol>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-blue-900 mb-2">
-                Quantas mesas?
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={numeroMesas}
-                onChange={(e) => setNumeroMesas(parseInt(e.target.value) || 1)}
-                className="w-full px-4 py-3 bg-white border-2 border-blue-200 text-blue-900 rounded-xl focus:outline-none focus:border-red-500 text-lg"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {Array.from({ length: numeroMesas }, (_, i) => i + 1).map(mesa => {
-                const urlMesa = `${window.location.origin}${window.location.pathname}?mesa=${mesa}`;
-                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlMesa)}`;
-                
-                return (
-                  <div key={mesa} className="bg-gray-50 rounded-xl p-4 text-center border-2 border-blue-200 hover:border-orange-500 transition">
-                    <div className="bg-white p-2 rounded-lg mb-2">
-                      <img 
-                        src={qrCodeUrl} 
-                        alt={`QR Code Mesa ${mesa}`}
-                        className="w-full h-auto"
-                      />
-                    </div>
-                    <p className="font-bold text-lg text-blue-900">Mesa {mesa}</p>
-                    <a
-                      href={qrCodeUrl}
-                      download={`mesa-${mesa}.png`}
-                      className="text-xs text-cyan-600 hover:text-cyan-500 underline mt-1 inline-block"
-                    >
-                      Baixar PNG
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
-              <p className="text-sm text-yellow-900">
-                <strong>💡 Dica:</strong> Imprima em papel adesivo ou plastifique!
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      <ModalQRCodes 
+      
+        mostrar={mostrarQRCodes}
+        onFechar={() => setMostrarQRCodes(false)}
+      />
 
       {mostrarCarrinho && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end backdrop-blur-sm">
