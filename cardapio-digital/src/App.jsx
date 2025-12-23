@@ -274,7 +274,6 @@ export default function CardapioDigital() {
       />
 
       <ModalQRCodes 
-      
         mostrar={mostrarQRCodes}
         onFechar={() => setMostrarQRCodes(false)}
       />
