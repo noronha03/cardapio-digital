@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Plus, Minus, Trash2, Send, Edit, Lock, LogOut, X, Save } from 'lucide-react';
+//Configurações e utilitários
 import { CONFIG, validarConfiguracao } from './config/configuracoes';
 import { enviarParaWhatsApp } from './utils/whatsapp';
+//Componentes 
 import { Header } from './components/Header';
 import { CardProduto } from './components/CardProduto';
 import { BotaoFinalizar } from './components/BotaoFinalizar';
@@ -9,17 +11,50 @@ import { ModalLogin } from './components/ModalLogin';
 import { ModalProduto } from './components/ModalProduto';
 import { ModalQRCodes } from './components/ModalQRCodes';
 import { Carrinho } from './components/Carrinho';
+//Hooks personalizados
+import { useCarrinho } from './hooks/useCarrinho';
+import { useProdutos } from './hooks/useProdutos';
+
 
 export default function CardapioDigital() {
-  const [carrinho, setCarrinho] = useState([]);
+  // ========================================
+  // 🎣 HOOKS PERSONALIZADOS
+  // ========================================
+  
+  // Hook do carrinho (toda a lógica!)
+  const {
+    carrinho,
+    adicionarAoCarrinho,
+    aumentarQuantidade,
+    diminuirQuantidade,
+    removerDoCarrinho,
+    calcularTotal,
+    obterQuantidadeNoCarrinho,
+    totalItens,
+  } = useCarrinho();
+
+  // Hook de produtos (toda a lógica!)
+  const {
+    produtos,
+    adicionarProduto,
+    editarProduto,
+    deletarProduto,
+  } = useProdutos();
+
+  // ========================================
+  // 📱 ESTADOS DA UI
+  // ========================================
+  
   const [mostrarCarrinho, setMostrarCarrinho] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [mostrarLogin, setMostrarLogin] = useState(false);
-  const [senhaDigitada, setSenhaDigitada] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarQRCodes, setMostrarQRCodes] = useState(false);
+  
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [senhaDigitada, setSenhaDigitada] = useState('');
+  
   const [produtoEditando, setProdutoEditando] = useState(null);
   const [modoEdicao, setModoEdicao] = useState('adicionar');
-  const [mostrarQRCodes, setMostrarQRCodes] = useState(false);
   const [observacoes, setObservacoes] = useState('');
   
   const [mesaAtual, setMesaAtual] = useState(() => {
@@ -27,21 +62,21 @@ export default function CardapioDigital() {
     return params.get('mesa') || null;
   });
 
-  const SENHA_ADMIN = CONFIG.admin.senha;
-
-  const produtosIniciais = CONFIG.produtosIniciais;
-
-  const [produtos, setProdutos] = useState(() => {
-    const salvos = localStorage.getItem('cardapio_produtos');
-    return salvos ? JSON.parse(salvos) : produtosIniciais;
-  });
-
+  // ========================================
+  // ⚙️ EFEITOS
+  // ========================================
+  
+  // Validar configurações ao carregar
   useEffect(() => {
     validarConfiguracao();
   }, []);
 
+  // ========================================
+  // 🔐 FUNÇÕES DE AUTENTICAÇÃO
+  // ========================================
+  
   const fazerLogin = () => {
-    if (senhaDigitada === SENHA_ADMIN) {
+    if (senhaDigitada === CONFIG.admin.senha) {
       setIsAdmin(true);
       setMostrarLogin(false);
       setSenhaDigitada('');
@@ -57,6 +92,10 @@ export default function CardapioDigital() {
     alert('Logout realizado!');
   };
 
+  // ========================================
+  // 📦 FUNÇÕES DE PRODUTOS
+  // ========================================
+  
   const abrirModalAdicionar = (categoria) => {
     setModoEdicao('adicionar');
     setProdutoEditando({
@@ -85,18 +124,10 @@ export default function CardapioDigital() {
     const categoria = produtoEditando.categoria;
 
     if (modoEdicao === 'adicionar') {
-      setProdutos({
-        ...produtos,
-        [categoria]: [...produtos[categoria], produtoEditando]
-      });
+      adicionarProduto(produtoEditando, categoria);
       alert('Produto adicionado com sucesso! ✅');
     } else {
-      setProdutos({
-        ...produtos,
-        [categoria]: produtos[categoria].map(p => 
-          p.id === produtoEditando.id ? produtoEditando : p
-        )
-      });
+      editarProduto(produtoEditando);
       alert('Produto atualizado com sucesso! ✅');
     }
 
@@ -104,77 +135,32 @@ export default function CardapioDigital() {
     setProdutoEditando(null);
   };
 
-  const deletarProduto = (produto) => {
-    if (window.confirm(`Tem certeza que deseja deletar "${produto.nome}"?`)) {
-      const categoria = produto.categoria;
-      setProdutos({
-        ...produtos,
-        [categoria]: produtos[categoria].filter(p => p.id !== produto.id)
-      });
+  const handleDeletarProduto = (produto) => {
+    const sucesso = deletarProduto(produto);
+    if (sucesso) {
       alert('Produto deletado! 🗑️');
     }
   };
 
-  const adicionarAoCarrinho = (produto) => {
-    setCarrinho(prevCarrinho => {
-      const itemIndex = prevCarrinho.findIndex(item => item.id === produto.id);
-      if (itemIndex !== -1) {
-        return prevCarrinho.map(item =>
-          item.id === produto.id ? { ...item, quantidade: Number(item.quantidade) + 1 } : item
-        );
-      }
-      // garantir que não venham propriedades "quantidade" do produto original
-      const { quantidade, ...produtoSemQuantidade } = produto;
-      return [...prevCarrinho, { ...produtoSemQuantidade, quantidade: 1 }];
-    });
-  };
-
-  const aumentarQuantidade = (id) => {
-    setCarrinho(prevCarrinho =>
-      prevCarrinho.map(item =>
-        item.id === id ? { ...item, quantidade: Number(item.quantidade) + 1 } : item
-      )
-    );
-  };
-
-  const diminuirQuantidade = (id) => {
-    setCarrinho(prevCarrinho => {
-      const item = prevCarrinho.find(i => i.id === id);
-      if (!item) return prevCarrinho;
-      const qty = Number(item.quantidade);
-      if (qty === 1) {
-        return prevCarrinho.filter(i => i.id !== id);
-      }
-      return prevCarrinho.map(i =>
-        i.id === id ? { ...i, quantidade: qty - 1 } : i
-      );
-    });
-  };
-
-  const removerDoCarrinho = (id) => {
-    setCarrinho(prevCarrinho => prevCarrinho.filter(item => item.id !== id));
-  };
-
-  const calcularTotal = () => {
-    return carrinho.reduce((total, item) => total + (item.preco * Number(item.quantidade)), 0);
-  };
-
-  const obterQuantidadeNoCarrinho = (produtoId) => {
-    const item = carrinho.find(item => item.id === produtoId);
-    return item ? Number(item.quantidade) : 0;
-  };
-
+  // ========================================
+  // 📱 FUNÇÕES DO WHATSAPP
+  // ========================================
+  
   const handleEnviarWhatsApp = () => {
     enviarParaWhatsApp(carrinho, calcularTotal(), mesaAtual, observacoes);
     setObservacoes('');
   };
 
+  // ========================================
+  // 🎨 RENDERIZAÇÃO
+  // ========================================
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
       <Header 
         mesaAtual={mesaAtual}
         isAdmin={isAdmin}
-        contadorCarrinho={carrinho.reduce((total, item) => total + Number(item.quantidade), 0)}
+        contadorCarrinho={totalItens}
         onAbrirCarrinho={() => setMostrarCarrinho(!mostrarCarrinho)}
         onAbrirLogin={() => setMostrarLogin(true)}
         onLogout={fazerLogout}
@@ -182,6 +168,7 @@ export default function CardapioDigital() {
       />
 
       <div className="container mx-auto px-4 py-10">
+        {/* Seção Hambúrgueres */}
         <section className="mb-16">
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -210,12 +197,13 @@ export default function CardapioDigital() {
                 onAumentar={aumentarQuantidade}
                 onDiminuir={diminuirQuantidade}
                 onEditar={abrirModalEditar}
-                onDeletar={deletarProduto}
+                onDeletar={handleDeletarProduto}
               />
             ))}
           </div>
         </section>
 
+        {/* Seção Bebidas */}
         <section>
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -244,19 +232,21 @@ export default function CardapioDigital() {
                 onAumentar={aumentarQuantidade}
                 onDiminuir={diminuirQuantidade}
                 onEditar={abrirModalEditar}
-                onDeletar={deletarProduto}
+                onDeletar={handleDeletarProduto}
               />
             ))}
           </div>
         </section>
       </div>
 
+      {/* Botão Finalizar Pedido */}
       <BotaoFinalizar 
-        totalItens={carrinho.reduce((total, item) => total + Number(item.quantidade), 0)}
+        totalItens={totalItens}
         onClick={() => setMostrarCarrinho(true)}
         mostrarCarrinho={mostrarCarrinho}
       />
 
+      {/* Modais */}
       <ModalLogin 
         mostrar={mostrarLogin}
         senhaDigitada={senhaDigitada}
