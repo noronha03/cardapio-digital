@@ -103,6 +103,18 @@ export default function CardapioDigital() {
   });
 
   // ========================================
+  // 🔄 RESET DO CARRINHO AO LER QR CODE
+  // ========================================
+  // Sempre que a mesa mudar (novo QR escaneado),
+  // o carrinho da sessão é limpo automaticamente
+  useEffect(() => {
+    if (mesaAtual) {
+      sessionStorage.removeItem('carrinho');
+    }
+  }, [mesaAtual]);
+
+
+  // ========================================
   // ⚙️ EFEITOS DE INICIALIZAÇÃO
   // ========================================
 
