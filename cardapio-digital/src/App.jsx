@@ -137,18 +137,19 @@ export default function CardapioDigital() {
   // ========================================
 
   // Abrir modal para adicionar novo produto
-  const abrirModalAdicionar = (categoria) => {
+  const abrirModalAdicionar = () => {
     setModoEdicao('adicionar');
     setProdutoEditando({
-      id: Date.now(),          // ID temporário
+      id: Date.now(),
       nome: '',
       descricao: '',
       preco: 0,
-      categoria,
-      imagem: '',
+      categoria: 'hamburgueres', // padrão inicial
+      imagem: ''
     });
     setMostrarModal(true);
   };
+
 
   // Abrir modal para editar produto existente
   const abrirModalEditar = (produto) => {
@@ -230,10 +231,11 @@ export default function CardapioDigital() {
 
             {isAdmin && (
               <button
-                onClick={() => abrirModalAdicionar('hamburgueres')}
-                className="bg-green-600 text-white px-6 py-3 rounded-xl"
+                onClick={abrirModalAdicionar}
+                className="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition flex items-center gap-2 shadow-xl font-semibold"
               >
-                <Plus size={22} /> Adicionar
+                <Plus size={22} />
+                Adicionar Produto
               </button>
             )}
           </div>

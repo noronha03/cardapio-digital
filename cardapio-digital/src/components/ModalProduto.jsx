@@ -108,6 +108,36 @@ export const ModalProduto = ({
         <div className="space-y-4">
 
           {/* ===============================
+              🗂️ CATEGORIA DO PRODUTO
+              ===============================
+              - Define onde o produto será exibido
+              - Controlado pelo App.jsx
+          */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Categoria
+            </label>
+
+            <select
+              value={produto.categoria}
+              onChange={(e) =>
+                onChangeProduto({
+                  ...produto,
+                  categoria: e.target.value
+                })
+              }
+              className="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500"
+            >
+              {/*Se futuramente for vender sobremesas ou outro tipo basta add
+                <option value="sobremesas">🍰 Sobremesa</option>
+              */}
+              <option value="hamburgueres">🍔 Hambúrguer</option>
+              <option value="bebidas">🥤 Bebida</option>
+            </select>
+          </div>
+
+
+          {/* ===============================
               🏷️ NOME DO PRODUTO
               =============================== */}
           <div>
