@@ -155,7 +155,7 @@ export const CONFIG = {
   avancado: {
 
     // Tamanho máximo de imagem (MB)
-    limiteImagemMB: 1,
+    limiteImagemMB: 5,
 
     // Persistir produtos no navegador?
     salvarNoLocalStorage: true,

@@ -178,37 +178,65 @@ export const ModalProduto = ({
               - Validação de tamanho
               - Preview automático
           */}
+          {/* Imagem */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Imagem do Produto
             </label>
+            
+            {/* Botões de escolha */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {/* Botão Galeria */}
+              <label className="cursor-pointer">
+                <div className="flex flex-col items-center justify-center bg-blue-50 border-2 border-blue-200 hover:border-blue-400 rounded-xl p-4 transition">
+                  <svg className="w-12 h-12 text-blue-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-sm font-semibold text-blue-600">📁 Escolher da Galeria</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
 
-            <div className="flex gap-3">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="flex-1 px-4 py-3 bg-gray-100 border-2 border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:border-red-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-600 file:text-white hover:file:bg-red-700 file:cursor-pointer"
-              />
-
-              {/* Limpa a imagem atual */}
-              <button
-                type="button"
-                onClick={() =>
-                  onChangeProduto({ 
-                    ...produto, 
-                    imagem: '' 
-                  })
-                }
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition border border-gray-200"
-              >
-                Limpar
-              </button>
+              {/* Botão Câmera */}
+              <label className="cursor-pointer">
+                <div className="flex flex-col items-center justify-center bg-green-50 border-2 border-green-200 hover:border-green-400 rounded-xl p-4 transition">
+                  <svg className="w-12 h-12 text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="text-sm font-semibold text-green-600">📸 Tirar Foto</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
             </div>
 
+            {/* Botão Limpar (só aparece se tiver imagem) */}
+            {produto.imagem && (
+              <button
+                type="button"
+                onClick={() => onChangeProduto({ ...produto, imagem: '' })}
+                className="w-full px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition border border-red-200 font-semibold"
+              >
+                🗑️ Remover Imagem
+              </button>
+            )}
+
             <p className="text-xs text-gray-500 mt-2">
-              📁 JPG, PNG, WEBP | Max: {CONFIG.avancado.limiteImagemMB}MB | 
-              Dica: comprima em tinypng.com
+              📁 JPG, PNG, WEBP | Max: {CONFIG.avancado.limiteImagemMB}MB
+            </p>
+            <p className="text-xs text-blue-600 mt-1">
+              💡 Dica: Comprima imagens grandes em tinypng.com
             </p>
           </div>
 
