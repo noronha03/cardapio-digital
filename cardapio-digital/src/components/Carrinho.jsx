@@ -24,10 +24,12 @@ import { ShoppingCart, X, Plus, Minus, Trash2, Send } from 'lucide-react';
 
 // Configurações globais (ex: observações habilitadas)
 import { CONFIG } from '../config/configuracoes';
+import { Comanda } from './Comanda';
 
 export const Carrinho = ({
   mostrar,              // Controla se o carrinho está visível ou não
   carrinho,             // Lista de itens adicionados [{ id, nome, preco, quantidade }]
+  mesaAtual,           // Número ou identificação da mesa atual
   observacoes,          // Texto de observações do pedido
   onChangeObservacoes,  // Função para atualizar observações
   onAumentar,           // Função para aumentar quantidade de um item
@@ -212,18 +214,41 @@ export const Carrinho = ({
                     - Dispara função que monta a mensagem
                     - Redireciona para WhatsApp
                 */}
-                <button
-                  onClick={onEnviarWhatsApp}
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-5 rounded-xl font-bold text-xl hover:from-green-700 hover:to-emerald-700 transition shadow-2xl flex items-center justify-center gap-3"
-                >
-                  <Send size={26} />
-                  Enviar Pedido via WhatsApp
-                </button>
+                {/* Botões de Ação */}
+                <div className="space-y-3">
+                  {/* Botão Imprimir Comanda */}
+                  <button
+                    onClick={() => window.print()}
+                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl hover:from-purple-700 hover:to-indigo-700 transition font-bold text-lg shadow-2xl flex items-center justify-center gap-3"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    🖨️ Imprimir Comanda
+                  </button>
+
+                  {/* Botão WhatsApp */}
+                  <button
+                    onClick={onEnviarWhatsApp}
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition font-bold text-lg shadow-2xl flex items-center justify-center gap-3"
+                  >
+                    <Send size={26} />
+                    📱 Enviar via WhatsApp
+                  </button>
+                </div>
               </div>
             </>
           )}
         </div>
       </div>
+      {/* Comanda para Impressão (invisível na tela) */}
+      <Comanda 
+        carrinho={carrinho}
+        total={calcularTotal()}
+        mesa={mesaAtual}
+        observacoes={observacoes}
+        mostrar={true}
+      />
     </div>
   );
 };

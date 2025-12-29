@@ -330,6 +330,7 @@ export default function CardapioDigital() {
       <Carrinho
         mostrar={mostrarCarrinho}
         carrinho={carrinho}
+        mesaAtual={mesaAtual}
         observacoes={observacoes}
         onChangeObservacoes={setObservacoes}
         onAumentar={aumentarQuantidade}
