@@ -228,13 +228,12 @@ export const Carrinho = ({
                   </button>
 
                   {/* Botão WhatsApp */}
-                  <button
-                    onClick={onEnviarWhatsApp}
-                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition font-bold text-lg shadow-2xl flex items-center justify-center gap-3"
-                  >
-                    <Send size={26} />
-                    📱 Enviar via WhatsApp
-                  </button>
+                  onClick={() => {
+                    onEnviarWhatsApp(); // Envia WhatsApp primeiro
+                    setTimeout(() => {
+                      window.print(); // Depois imprime
+                    }, 1000);
+                  }}
                 </div>
               </div>
             </>
