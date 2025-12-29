@@ -29,6 +29,7 @@ export const Header = ({
   onAbrirLogin,      // Função para abrir o login admin
   onLogout,          // Função para sair do modo admin
   onAbrirQRCodes,    // Função para abrir o modal de QR Codes
+  onAbrirImpressora, // Função para abrir o modal de configuração da impressora
 }) => {
 
   return (
@@ -84,6 +85,17 @@ export const Header = ({
               >
                 <span className="text-xl">🔲</span>
                 <span className="hidden md:inline">QR Codes</span>
+              </button>
+            )}
+
+            {/* Botão Impressora (só admin e sem mesa) */}
+            {!mesaAtual && isAdmin && (
+              <button
+                onClick={onAbrirImpressora}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition shadow-lg flex items-center gap-2"
+              >
+                <span className="text-xl">🖨️</span>
+                <span className="hidden md:inline">Impressora</span>
               </button>
             )}
 

@@ -163,6 +163,19 @@ export const CONFIG = {
     // Ocultar botões admin quando cliente acessa via mesa?
     esconderAdminComMesa: true,
   },
+
+  // Configurações de Impressão
+  impressao: {
+
+    // Liga/desliga impressão automática
+    habilitada: false, 
+
+    // Nome da impressora cadastrada
+    impressoraNome: '', 
+
+    // Imprime sem janela
+    impressaoSilenciosa: true, 
+  }
 };
 
 // ========================================

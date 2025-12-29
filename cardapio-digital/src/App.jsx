@@ -36,12 +36,14 @@ import { ModalLogin } from './components/ModalLogin';
 import { ModalProduto } from './components/ModalProduto';
 import { ModalQRCodes } from './components/ModalQRCodes';
 import { Carrinho } from './components/Carrinho';
+import { ModalImpressora } from './components/ModalImpressora';
 
 // ===============================
 // 🎣 HOOKS PERSONALIZADOS
 // ===============================
 import { useCarrinho } from './hooks/useCarrinho';
 import { useProdutos } from './hooks/useProdutos';
+import { useImpressora } from './hooks/useImpressora';
 
 export default function CardapioDigital() {
 
@@ -71,6 +73,15 @@ export default function CardapioDigital() {
     deletarProduto,
   } = useProdutos();
 
+  // Hook de impressora
+  const {
+    impressoraHabilitada,
+    impressoraNome,
+    habilitarImpressora,
+    desabilitarImpressora,
+    imprimirComanda,
+  } = useImpressora();
+
   // ========================================
   // 📱 ESTADOS DE INTERFACE (UI)
   // ========================================
@@ -80,6 +91,7 @@ export default function CardapioDigital() {
   const [mostrarLogin, setMostrarLogin] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarQRCodes, setMostrarQRCodes] = useState(false);
+  const [mostrarModalImpressora, setMostrarModalImpressora] = useState(false);
 
   // Autenticação
   const [isAdmin, setIsAdmin] = useState(false);
@@ -231,6 +243,7 @@ export default function CardapioDigital() {
         onAbrirLogin={() => setMostrarLogin(true)}
         onLogout={fazerLogout}
         onAbrirQRCodes={() => setMostrarQRCodes(true)}
+        onAbrirImpressora={() => setMostrarModalImpressora(true)}
       />
 
       {/* ===============================
@@ -339,6 +352,16 @@ export default function CardapioDigital() {
         onEnviarWhatsApp={handleEnviarWhatsApp}
         onFechar={() => setMostrarCarrinho(false)}
         calcularTotal={calcularTotal}
+        imprimirComanda={imprimirComanda}
+      />
+
+      <ModalImpressora 
+        mostrar={mostrarModalImpressora}
+        impressoraHabilitada={impressoraHabilitada}
+        impressoraNome={impressoraNome}
+        onHabilitar={habilitarImpressora}
+        onDesabilitar={desabilitarImpressora}
+        onFechar={() => setMostrarModalImpressora(false)}
       />
     </div>
   );

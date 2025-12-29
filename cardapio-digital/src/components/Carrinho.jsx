@@ -29,7 +29,7 @@ import { Comanda } from './Comanda';
 export const Carrinho = ({
   mostrar,              // Controla se o carrinho está visível ou não
   carrinho,             // Lista de itens adicionados [{ id, nome, preco, quantidade }]
-  mesaAtual,           // Número ou identificação da mesa atual
+  mesaAtual,            // Número ou identificação da mesa atual
   observacoes,          // Texto de observações do pedido
   onChangeObservacoes,  // Função para atualizar observações
   onAumentar,           // Função para aumentar quantidade de um item
@@ -38,6 +38,7 @@ export const Carrinho = ({
   onEnviarWhatsApp,     // Função responsável por enviar o pedido
   onFechar,             // Função para fechar o carrinho
   calcularTotal,        // Função que calcula o valor total do pedido
+  imprimirComanda,      // Função que imprime a comanda
 }) => {
 
   // -------------------------------
@@ -220,8 +221,8 @@ export const Carrinho = ({
                   onClick={() => {
                     onEnviarWhatsApp(); // Envia WhatsApp
                     setTimeout(() => {
-                      window.print(); // Imprime automaticamente
-                    }, 1000); // Atraso de 1 segundo para garantir que o WhatsApp abra primeiro
+                      imprimirComanda(); // Imprime silenciosamente
+                    }, 500);
                   }}
                   className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-5 rounded-xl hover:from-green-700 hover:to-emerald-700 transition font-bold text-xl shadow-2xl flex items-center justify-center gap-3"
                 >
